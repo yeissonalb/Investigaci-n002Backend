@@ -1,0 +1,40 @@
+name: Build, publish and deploy to MonsterASP.NET
+
+on:
+  push:
+    branches: [main, feature/jwt-auth]
+  workflow_dispatch:
+
+env:
+  DOTNET_PROJECT: HackerRank1/HackerRank1.csproj
+  PUBLISH_DIR: publish
+
+jobs:
+  build_and_deploy:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.DOTNET_PROJECT }}
+
+      - name: Build
+        run: dotnet build ${{ env.DOTNET_PROJECT }} --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish ${{ env.DOTNET_PROJECT }} --configuration Release --output ./${{ env.PUBLISH_DIR }} --runtime win-x86 --self-contained false
+
+      - name: Deploy to MonsterASP.NET via WebDeploy
+        uses: rasmusbuchholdt/simply-web-deploy@2.2.0
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+          source-path: '\publish\'
