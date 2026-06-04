@@ -75,12 +75,22 @@ El workflow `.github/workflows/deploy.yml` publica y despliega automáticamente 
 
 | Secret | Ejemplo | Dónde obtenerlo |
 |--------|---------|-----------------|
-| `WEBSITE_NAME` | `site1234` | Panel MonsterASP → WebDeploy |
-| `SERVER_COMPUTER_NAME` | `https://site1234.siteasp.net:8172` | Panel MonsterASP → WebDeploy |
-| `SERVER_USERNAME` | `site1234` | Panel MonsterASP → WebDeploy |
+| `WEBSITE_NAME` | `site72384` | Panel MonsterASP → WebDeploy → Sitio |
+| `SERVER_COMPUTER_NAME` | `https://site72384.siteasp.net:8172` | Servidor + puerto `:8172` |
+| `SERVER_USERNAME` | `site72384` | Acceso WebDeploy |
 | `SERVER_PASSWORD` | `********` | Panel MonsterASP → WebDeploy |
 
 **Después del deploy:**
 
 1. Actualiza `Cors:AllowedOrigins` en `appsettings.Production.json` con la URL real del frontend.
-2. Configura el frontend con `VITE_API_URL` apuntando a tu API en MonsterASP (ej. `https://site1234.siteasp.net`).
+2. Configura el frontend con `VITE_API_URL=https://site72384.siteasp.net`.
+3. En el panel MonsterASP, activa **.NET 6** para el sitio si la API devuelve 404.
+
+### Deploy local (sin GitHub Actions)
+
+```powershell
+$env:WEBDEPLOY_PASSWORD = "tu_contraseña"
+.\scripts\deploy-local.ps1
+```
+
+**API en producción:** https://site72384.siteasp.net/api/auth/login
